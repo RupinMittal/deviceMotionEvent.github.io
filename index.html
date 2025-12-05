@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Github DeviceMotionEvent</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h1>Device Motion</h1>
+
+    <button id="requestBtn">Request Permission</button>
+    <button id="listeningButton">Add Event Listener</button>
+
+    <div id="data">
+        <h3>Acceleration (with gravity)</h3>
+        <p>X: <span id="accel-x">-</span> m/s²</p>
+        <p>Y: <span id="accel-y">-</span> m/s²</p>
+        <p>Z: <span id="accel-z">-</span> m/s²</p>
+
+        <h3>Acceleration (without gravity)</h3>
+        <p>X: <span id="accel-no-gravity-x">-</span> m/s²</p>
+        <p>Y: <span id="accel-no-gravity-y">-</span> m/s²</p>
+        <p>Z: <span id="accel-no-gravity-z">-</span> m/s²</p>
+
+        <h3>Rotation Rate</h3>
+        <p>Alpha: <span id="rotation-alpha">-</span> deg/s</p>
+        <p>Beta: <span id="rotation-beta">-</span> deg/s</p>
+        <p>Gamma: <span id="rotation-gamma">-</span> deg/s</p>
+    </div>
+
+    <script>
+        document.getElementById('requestBtn').addEventListener('click', async () => {
+            if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                try {
+                    const permission = await DeviceMotionEvent.requestPermission();
+                    if (permission === 'granted') {
+                        console.log('DeviceMotionEvent permission granted');
+                    } else {
+                        console.log('DeviceMotionEvent permission denied');
+                    }
+                } catch (error) {
+                    console.error('Error requesting DeviceMotionEvent permission:', error);
+                }
+            } else {
+                console.log('DeviceMotionEvent.requestPermission not available');
+            }
+            document.getElementById('requestBtn').style.display = 'none';
+        });
+
+        document.getElementById('listeningButton').addEventListener('click', async () => {
+            window.addEventListener('devicemotion', (event) => {
+                // Acceleration including gravity
+                const accel = event.accelerationIncludingGravity;
+                if (accel) {
+                    document.getElementById('accel-x').textContent = accel.x?.toFixed(2) || '-';
+                    document.getElementById('accel-y').textContent = accel.y?.toFixed(2) || '-';
+                    document.getElementById('accel-z').textContent = accel.z?.toFixed(2) || '-';
+                }
+
+                // Acceleration without gravity
+                const accelNoGravity = event.acceleration;
+                if (accelNoGravity) {
+                    document.getElementById('accel-no-gravity-x').textContent = accelNoGravity.x?.toFixed(2) || '-';
+                    document.getElementById('accel-no-gravity-y').textContent = accelNoGravity.y?.toFixed(2) || '-';
+                    document.getElementById('accel-no-gravity-z').textContent = accelNoGravity.z?.toFixed(2) || '-';
+                }
+
+                // Rotation rate
+                const rotation = event.rotationRate;
+                if (rotation) {
+                    document.getElementById('rotation-alpha').textContent = rotation.alpha?.toFixed(2) || '-';
+                    document.getElementById('rotation-beta').textContent = rotation.beta?.toFixed(2) || '-';
+                    document.getElementById('rotation-gamma').textContent = rotation.gamma?.toFixed(2) || '-';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
